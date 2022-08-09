@@ -2,7 +2,7 @@ from typing import List, Dict, Union
 
 
 class Databular:
-    def __init__(self, row_data: List[List] = None, column_names: List[str] = None) -> None:
+    def __init__(self, row_data: List[List[Union[int, float, str, None]]] = None, column_names: List[str] = None) -> None:
         if column_names is not None:
             if len(set(column_names)) != len(column_names):
                 raise ValueError('The column names should be unique and should not have duplicates.')
