@@ -77,3 +77,50 @@ class Databular:
                    for i, val in enumerate(columns)]
         self.__rows = [list(row) for row in zip(*columns)]
         self.__column_dtypes = column_types
+
+    def __construct_table_base(self) -> List[List[Union[int, float, str, None]]]:
+        table = [
+            [" "] + self.__columns
+        ]
+        if not self.__rows:
+            table.append([""] * (len(self.__columns) + 1))
+        else:
+            for ind, row in enumerate(self.__rows):
+                table.append([ind] + row)
+
+        return table
+
+    @staticmethod
+    def __pretty_print(table: List[List[Union[int, float, str, None]]]) -> None:
+        max_len = [len(x) for x in table[0]]
+        for row in table[1:]:
+            for ind, col in enumerate(row):
+                max_len[ind] = max(max_len[ind], len(str(col)))
+
+        line_length = len('|' + ''.join([h + ' ' * (l - len(h)) + ' | ' for h, l in zip(table[0], max_len)]))
+        seperator = '+' + '-' * (line_length - 3) + '+' + '\n'
+
+        final_table = seperator
+        final_table += '|' + ''.join([h + ' ' * (l - len(h)) + ' | ' for h, l in zip(table[0], max_len)]) + '\n'
+        final_table += seperator
+
+        for row in table[1:]:
+            final_table += '|' + ''.join([str(c) + ' ' * (l - len(str(c))) + ' | ' for c, l in zip(row, max_len)])
+            final_table += '\n'
+
+        final_table += seperator
+        print(final_table)
+
+    def __str__(self) -> str:
+        table = self.__construct_table_base()
+
+        longest_cols = [
+            (max([len(str(row[i])) for row in table]) + 3)
+            for i in range(len(table[0]))
+        ]
+        row_format = "".join(["{:<" + str(longest_col) + "}" for longest_col in longest_cols])
+        return "\n".join([row_format.format(*map(str, row)) for row in table])
+
+    def display(self) -> None:
+        table = self.__construct_table_base()
+        self.__pretty_print(table)
