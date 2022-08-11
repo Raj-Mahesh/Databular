@@ -91,7 +91,7 @@ class Databular:
         return table
 
     @staticmethod
-    def __pretty_print(table: List[List[Union[int, float, str, None]]]) -> None:
+    def __pretty_print(table: List[List[Union[int, float, str, None]]]) -> str:
         max_len = [len(x) for x in table[0]]
         for row in table[1:]:
             for ind, col in enumerate(row):
@@ -109,7 +109,7 @@ class Databular:
             final_table += '\n'
 
         final_table += seperator
-        print(final_table)
+        return final_table
 
     def __str__(self) -> str:
         table = self.__construct_table_base()
@@ -157,9 +157,9 @@ class Databular:
 
         return record
     
-    def display(self) -> None:
+    def display(self) -> str:
         table = self.__construct_table_base()
-        self.__pretty_print(table)
+        return self.__pretty_print(table)
                
     def import_file(self, file_path: str) -> None:
         """
@@ -202,7 +202,7 @@ class Databular:
             for row in table:
                 file.write(f"{','.join(map(str, row))}\n")
              
-    def top(self, n: int = 5) -> None:
+    def top(self, n: int = 5) -> str:
         """
         Displays the top 5(or specified number) records of the data.
         
@@ -214,9 +214,9 @@ class Databular:
             raise IndexError('Index value should always be more than 1.')
         table = self.__construct_table_base()
         cut_table = table[:n+1]
-        self.__pretty_print(cut_table)
+        return self.__pretty_print(cut_table)
 
-    def bottom(self, n: int = 5) -> None:
+    def bottom(self, n: int = 5) -> str:
         """
         Displays the bottom 5(or specified number) records of the data.
         
@@ -229,7 +229,7 @@ class Databular:
         table = self.__construct_table_base()
         cut_table = [table[0]]
         cut_table.extend(table[~(n - 1):])
-        self.__pretty_print(cut_table)
+        return self.__pretty_print(cut_table)
         
     def filter(self, column_name: str, operator: str, value: Union[str, float, int]) -> None:
         """
@@ -276,14 +276,15 @@ class Databular:
         self.__rows = filtered_rows
         
     def get_data(self) -> Dict:
-         """
-         The function is used to give the copy of the entire data.
-         """
+        """
+        The function is used to give the copy of the entire data.
+        :return: a dictionary with column_names and row_data to access the entire data as a copy
+        """
 
-         return {
+        return {
             'column_names': self.__columns,
             'row_data': self.__rows
-              }
+        }
      
     def merge(self, table) -> None:
         """
@@ -321,8 +322,6 @@ class Databular:
         :raises ReferenceError: if the column name is not found in the databular table.
         
         """
-      
-    
         if column_name not in self.__columns:
             raise ReferenceError('The column name is not found in the databular table.')
 
@@ -344,7 +343,7 @@ class Databular:
         
         :param column_name: the column name to check for null values.
         :param column_ind: index of the column.
-        :param null_count: snumber of null values in the column.
+        :param null_count: number of null values in the column.
         """
         if column_name not in self.__columns:
             raise ReferenceError('The column name is not found in the databular table.')
@@ -358,7 +357,7 @@ class Databular:
         print(f"The column '{column_name}' has {null_count} null values.")
         return True if null_count != 0 else False
 
-    def impute(self, column_name: str, value: Union[str, int, float]):
+    def impute(self, column_name: str, value: Union[str, int, float]) -> None:
         """ 
         The function replaces the null values with specific values.
         
