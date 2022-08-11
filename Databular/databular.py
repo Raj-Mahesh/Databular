@@ -274,4 +274,127 @@ class Databular:
                     filtered_rows.append(row)
 
         self.__rows = filtered_rows
-    
+        
+    def get_data(self) -> Dict:
+         """
+         The function is used to give the copy of the entire data.
+         
+         :return: column names, row data.
+         """
+
+         return {
+            'column_names': self.__columns,
+            'row_data': self.__rows
+              }
+     
+    def merge(self, table) -> None:
+        """
+        The function imerges one databular table to another.
+  
+        :param table: the databular tables to be merges.
+        """
+        
+        if type(table).__name__ != 'Databular':
+            raise ValueError('The parameter passed is not a databular object.')
+        data = table.get_data()
+
+        if self.__columns != data['column_names']:
+            raise ValueError('The columns between the databular tables do not match.')
+
+        if len(data['row_data']) == 0:
+            raise ValueError('There are no records in the databular object which is passed.')
+
+        self.__rows.extend(data['row_data'])
+        self.__preserve_dtype()
+        print("The tables have been merged successfully.")
+
+    def to_str_type(self, column_name: str) -> None:
+        """
+        The function coverts a column’s data to string type.
+        
+        :param column_name: the column name where the conversion is needed.
+        """
+        if column_name not in self.__columns:
+            raise ReferenceError('The column name is not found in the databular table.')
+
+        column_ind = self.__columns.index(column_name)
+        prev_type = self.__column_dtypes[column_ind]
+        if prev_type == str:
+            print(f"The column '{column_name}' is already of type str.")
+
+        else:
+            self.__column_dtypes[column_ind] = str
+            for i in range(len(self.__rows)):
+                self.__rows[i][column_ind] = str(self.__rows[i][column_ind])
+
+            print(f"The column '{column_name}' has been converted from type {prev_type} to type str.")
+
+    def has_null(self, column_name: str) -> bool:
+        """
+        The function checks if the column has null values.
+        
+        :param column_name: the column name to check for null values.
+        
+        :return: boolean value true or false.
+        """
+        if column_name not in self.__columns:
+            raise ReferenceError('The column name is not found in the databular table.')
+
+        null_count = 0
+        column_ind = self.__columns.index(column_name)
+        for i in range(len(self.__rows)):
+            if self.__rows[i][column_ind] is None or self.__rows[i][column_ind] == "None":
+                null_count += 1
+
+        print(f"The column '{column_name}' has {null_count} null values.")
+        return True if null_count != 0 else False
+
+    def impute(self, column_name: str, value: Union[str, int, float]):
+        """ 
+        The function replaces the null values with specific values.
+        
+        :param column_name: column name which has the null values to be replaced.
+        :param value: has the value used to check the type.
+        """
+        has_null_values = self.has_null(column_name)
+        if not has_null_values:
+            print('There are no null values to be imputed with.')
+
+        else:
+            column_ind = self.__columns.index(column_name)
+            if type(value) == str:
+                impute_val = value
+                if value in {"min", "max", "mean"}:
+                    if self.__column_dtypes[column_ind] == str:
+                        impute_val = value
+                    else:
+                        col_values = [row[column_ind] for row in self.__rows if row[column_ind] not in {None, "None"}]
+
+                        if len(col_values) == 0:
+                            impute_val = None
+
+                        elif value == "min":
+                            impute_val = min(col_values)
+
+                        elif value == "max":
+                            impute_val = max(col_values)
+
+                        elif value == 'mean':
+                            impute_val = self.__mean(col_values)
+
+                for i in range(len(self.__rows)):
+                    if self.__rows[i][column_ind] in {None, "None"}:
+                        self.__rows[i][column_ind] = impute_val
+
+            elif type(value) in {float, int}:
+                if self.__column_dtypes[column_ind] == str:
+                    raise TypeError(f'The specified column is of type str and the value is of type{type(value).__name__}')
+
+                else:
+                    for i in range(len(self.__rows)):
+                        if self.__rows[i][column_ind] in {None, "None"}:
+                            self.__rows[i][column_ind] = value
+
+        self.__preserve_dtype()
+
+  
