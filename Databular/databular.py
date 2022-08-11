@@ -321,8 +321,6 @@ class Databular:
         :raises ReferenceError: if the column name is not found in the databular table.
         
         """
-      
-    
         if column_name not in self.__columns:
             raise ReferenceError('The column name is not found in the databular table.')
 
