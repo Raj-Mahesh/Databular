@@ -407,4 +407,146 @@ class Databular:
 
         self.__preserve_dtype()
 
+    @staticmethod
+    def __mean(column) -> float or str:
+        """
+        Function purpose : This function computes the mean of attributes of the dataset
+        :param column:  Numeric column to compute the mean values
+        :return: a mean value with the float or string datatype
+        """
+        column = [val for val in column if val is not None]
+        if len(column) == 0:
+            return '-'
+        else:
+            mean = sum(column) / len(column)
+            return round(mean, 5)
+
+    def __std(self, column) -> float or str:
+        """
+        Function purpose : This function computes the standard deviation of attributes from the mean
+        :param column:  Numeric column to compute the standard deviation values
+        :return: a mean value with the float or string datatype
+        """
+        mean_val = self.__mean(column)
+        if mean_val == '-':
+            return mean_val
+        else:
+            column = [val for val in column if val is not None]
+            variance = sum([((val - mean_val) ** 2) for val in column]) / len(column)
+            stddev = variance ** 0.5
+            return round(stddev, 5)
+
+    def describe(self) -> None:
+        """
+        Function purpose : Descriptive statistics include those that incldues the DataType, Count, Frequency, Mean,
+        Standard Deviation and shape of a dataset’s distribution
+        :return: None
+        """
+        desc = [self.__columns]
+        columns = [list(row) for row in zip(*self.__rows)]
+        desc.append([f"Data Type: {col_type.__name__}" for col_type in self.__column_dtypes])
+        desc.append([f"Total Count: {len(col)}" for col in columns])
+        desc.append([f"Top Freq Value: {max(col, key=col.count)}" for col in columns])
+        desc.append([f"Top Freq Count: {col.count(max(col, key=col.count))}" for col in columns])
+        desc.append([f"Mean: {'-' if self.__column_dtypes[i] == str else self.__mean(col)}"
+                     for i, col in enumerate(columns)])
+        desc.append([f"STD: {'-' if self.__column_dtypes[i] == str else self.__std(col)}"
+                     for i, col in enumerate(columns)])
+        desc.append([f"Has None Values: {None in col}" for col in columns])
+        self.__pretty_print(desc)
+
+    def add_record(self, record: List[Union[str, int, float]]) -> None:
+        """
+        Function Purpose : Add a record into the existing dataframe
+        :param record: A data row that needs to get added into the existing dataframe
+        :return:
+        """
+        if len(record) != len(self.__columns):
+            raise ValueError(
+                'The number of columns in record does not match the number of columns in the databular table.')
+
+        else:
+            self.__rows.append(record)
+            self.__preserve_dtype()
+            print("Successfully inserted a record in the databular table.")
+
+    def add_column(self, column_name: str, column_data: List[Union[str, int, float]]) -> None:
+        """
+        Function Purpose: Add a record into the existing dataframe
+        :param column_name: The desired name of the column that has to get appended into the dataframe
+        :param column_data: The data to be appended into the existing dataframe
+        :return: None
+        """
+        length = 0
+        columns = []
+        if self.__check_type(column_name) != str or len(column_name) == 0:
+            raise TypeError(
+                'The columns name should be of string type and must not start with a numeric value and must not be empty')
+
+        if self.__rows is not None and len(self.__rows):
+            columns = [list(row) for row in zip(*self.__rows)]
+            length = len(columns[0])
+
+        if length != len(column_data):
+            raise ValueError(
+                'The number of records passed does not match the number of records in the databular table.')
+
+        elif column_name in self.__columns:
+            raise ValueError('The column name given already exists in the databular table.')
+
+        else:
+            columns.append(column_data)
+            self.__columns.append(column_name)
+            self.__rows = [list(row) for row in zip(*columns)]
+            self.__preserve_dtype()
+            print("Successfully inserted a column in the databular table.")
+
+    def search(self, column_name: str, operator: str, value: Union[str, float, int]):
+        """
+        Function Purpose : To filter and return the searched column values if available in the dataset
+        :param column_name: The column name that has to be searched and filtered in the dataset
+        :param operator: The arithmetic operator to compare with column values
+        :param value: The value to be compared with the column values
+        :return: a resultant filtered dataframe based on the condition given
+        """
+        if not column_name or not operator or not value:
+            raise ValueError('Please pass the appropriate values for filtering.')
+
+        if type(column_name) != str or column_name not in self.__columns:
+            raise ValueError('Column not found in databular table.')
+
+        column_index = self.__columns.index(column_name)
+        col_type = self.__column_dtypes[column_index]
+        if (type(value) == str) and col_type != str:
+            raise ArithmeticError("The specified column is not of string type, please pass a numeric value.")
+
+        if (type(value) == str) and operator != '==':
+            raise ArithmeticError("For string comparison, please use only == operator.")
+
+        if col_type == str and (type(value) != str):
+            raise ArithmeticError("The specified column is of string type, please pass a string value.")
+
+        column_index = self.__columns.index(column_name)
+        filtered_rows = []
+        for row in self.__rows:
+            row_val = str(row[column_index]) if row[column_index] is None or row == 'None' else col_type(
+                row[column_index])
+            if col_type == str:
+                if row_val == value:
+                    filtered_rows.append(row)
+            else:
+                if eval(f"{row_val} {operator} {value}"):
+                    filtered_rows.append(row)
+
+        table = [
+            [" "] + self.__columns
+        ]
+        if not self.__rows:
+            table.append([""] * (len(self.__columns) + 1))
+        else:
+            for ind, row in enumerate(filtered_rows):
+                table.append([ind] + row)
+
+        self.__pretty_print(table)
+
   
