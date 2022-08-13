@@ -3,7 +3,7 @@ import unittest
 import os
 
 
-def get_databular_instance(column_names = None, row_data = None):
+def get_databular_instance(column_names=None, row_data=None):
     # Returns an initialized instance of the databular object
     return db(column_names=column_names, row_data=row_data)
 
@@ -125,14 +125,15 @@ class Test_Import(unittest.TestCase):
         self.assertEqual(
             dt.display(),
             "".join(
-                ['+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n',
-                 '|  | Series_reference | Period  | Data_value | Suppressed | STATUS | UNITS   | Magnitude | Subject                      | Group                                                              | Series_title_1             | Series_title_2           | Series_title_3 | Series_title_4 | Series_title_5 | \n',
-                 '+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n',
-                 '|0 | WTSQ.SFA1CA      | 1995.03 | 2368.69    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
-                 '|1 | WTSQ.SFA1CA      | 1995.06 | 2100.44    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
-                 '|2 | WTSQ.SFA1CA      | 1995.09 | 2070.21    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
-                 '|3 | WTSQ.SFA1CA      | 1995.12 | 2284.77    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
-                 '+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n']
+                [
+                    '+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n',
+                    '|  | Series_reference | Period  | Data_value | Suppressed | STATUS | UNITS   | Magnitude | Subject                      | Group                                                              | Series_title_1             | Series_title_2           | Series_title_3 | Series_title_4 | Series_title_5 | \n',
+                    '+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n',
+                    '|0 | WTSQ.SFA1CA      | 1995.03 | 2368.69    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
+                    '|1 | WTSQ.SFA1CA      | 1995.06 | 2100.44    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
+                    '|2 | WTSQ.SFA1CA      | 1995.09 | 2070.21    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
+                    '|3 | WTSQ.SFA1CA      | 1995.12 | 2284.77    | None       | F      | Dollars | 6         | Wholesale Trade Survey - WTS | Industry by variable - (ANZSIC06) - Subannual Financial Collection | Basic material wholesaling | Sales (operating income) | Current prices | Unadjusted     | None           | \n',
+                    '+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+ \n']
             )
         )
 
@@ -455,6 +456,7 @@ class Test_Display(unittest.TestCase):
             {'c': ['a', 'a', 'a', 'a', 'a', 'a', 'a', '12', None, '500', 'abcd', '3']}
         )
 
+
 class Test_Information(unittest.TestCase):
     # test_describe 1-2 are used to check if the descriptive analysis of the data are displayed as expected
     def test_describe1(self):
@@ -630,3 +632,235 @@ class Test_Information(unittest.TestCase):
                           [1, 55, 'a'],
                           [1, None, 'a']]}
         )
+
+
+class Test_Manipulation(unittest.TestCase):
+    # test_addrecord 1-2 are used to check if the addition of a new row is successfully carried out
+    def test_addrecord1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"]]
+        )
+        dt.add_record([3, 2, 1])
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+---------------+ \n',
+                 '|  | a  | b | c | \n',
+                 '+---------------+ \n',
+                 '|0 | 10 | 2 | a | \n',
+                 '|1 | 1  | 2 | a | \n',
+                 '|2 | 1  | 2 | a | \n',
+                 '|3 | 3  | 2 | 1 | \n',
+                 '+---------------+ \n']
+            )
+        )
+
+    def test_addrecord2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"]]
+        )
+        dt.add_record(['a', 'b', 'c'])
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+---------------+ \n',
+                 '|  | a  | b | c | \n',
+                 '+---------------+ \n',
+                 '|0 | 10 | 2 | a | \n',
+                 '|1 | 1  | 2 | a | \n',
+                 '|2 | 1  | 2 | a | \n',
+                 '|3 | a  | b | c | \n',
+                 '+---------------+ \n']
+            )
+        )
+
+    # test_addcolumn 1-2 are used to check if the addition of a new column is successfully carried out
+    def test_addcolumn1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"]]
+        )
+
+        dt.add_column(
+            column_name='d',
+            column_data=[True, False, True]
+        )
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+-----------------------+ \n',
+                 '|  | a  | b | c | d     | \n',
+                 '+-----------------------+ \n',
+                 '|0 | 10 | 2 | a | True  | \n',
+                 '|1 | 1  | 2 | a | False | \n',
+                 '|2 | 1  | 2 | a | True  | \n',
+                 '+-----------------------+ \n']
+            )
+        )
+
+    def test_addcolumn2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"]]
+        )
+
+        dt.add_column(
+            column_name='_100',
+            column_data=[100] * 3
+        )
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+----------------------+ \n',
+                 '|  | a  | b | c | _100 | \n',
+                 '+----------------------+ \n',
+                 '|0 | 10 | 2 | a | 100  | \n',
+                 '|1 | 1  | 2 | a | 100  | \n',
+                 '|2 | 1  | 2 | a | 100  | \n',
+                 '+----------------------+ \n']
+            )
+        )
+
+    # test_filter 1-2 are used to check if a specific filter of the data based on a condition yields results as expected
+    def test_filter1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+        dt.filter('b', '>', 2)
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+---------------+ \n'
+                 '|  | a | b  | c | \n'
+                 '+---------------+ \n'
+                 '|0 | 1 | 55 | a | \n'
+                 '+---------------+ \n']
+            )
+        )
+
+    def test_filter2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+        dt.filter('c', '==', 'a')
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+------------------+ \n'
+                 '|  | a  | b    | c | \n'
+                 '+------------------+ \n'
+                 '|0 | 10 | 2    | a | \n'
+                 '|1 | 1  | 2    | a | \n'
+                 '|2 | 1  | 2    | a | \n'
+                 '|3 | 1  | 55   | a | \n'
+                 '|4 | 1  | None | a | \n'
+                 '|5 | 1  | 2    | a | \n'
+                 '|6 | 1  | 2    | a | \n'
+                 '+------------------+ \n']
+            )
+        )
+
+    # test_merge 1-2 are used to see if two databular tables are successfully merging
+    def test_merge1(self):
+        dt1 = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"]]
+        )
+
+        dt2 = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+        dt1.merge(dt2)
+
+        self.assertEqual(
+            dt1.display(),
+            "".join(
+                ['+----------------------+ \n',
+                 '|   | a  | b    | c    | \n',
+                 '+----------------------+ \n',
+                 '|0  | 10 | 2    | a    | \n',
+                 '|1  | 1  | 2    | a    | \n',
+                 '|2  | 1  | 2    | a    | \n',
+                 '|3  | 1  | 55   | a    | \n',
+                 '|4  | 1  | None | a    | \n',
+                 '|5  | 1  | 2    | a    | \n',
+                 '|6  | 1  | 2    | a    | \n',
+                 '|7  | 1  | 2    | 12   | \n',
+                 '|8  | 1  | 2    | None | \n',
+                 '|9  | 1  | 2    | 500  | \n',
+                 '|10 | 1  | 2    | abcd | \n',
+                 '|11 | 1  | 2    | 3    | \n',
+                 '+----------------------+ \n']
+            )
+        )
+
+    def test_merge2(self):
+        dt1 = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[4, 2, 3]]
+        )
+        dt2 = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1, 2, 3]]
+        )
+        dt1.merge(dt2)
+        self.assertEqual(
+            dt1.display(),
+            "".join(
+                ['+--------------+ \n',
+                 '|  | a | b | c | \n',
+                 '+--------------+ \n',
+                 '|0 | 4 | 2 | 3 | \n',
+                 '|1 | 1 | 2 | 3 | \n',
+                 '+--------------+ \n']
+            )
+            )
