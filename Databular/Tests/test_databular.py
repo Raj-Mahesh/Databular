@@ -455,4 +455,178 @@ class Test_Display(unittest.TestCase):
             {'c': ['a', 'a', 'a', 'a', 'a', 'a', 'a', '12', None, '500', 'abcd', '3']}
         )
 
+class Test_Information(unittest.TestCase):
+    # test_describe 1-2 are used to check if the descriptive analysis of the data are displayed as expected
+    def test_describe1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+        self.assertEqual(
+            dt.describe(),
+            "".join(
+                ['+-----------------------------------------------------------------------+ \n',
+                 '|a                      | b                     | c                     | \n',
+                 '+-----------------------------------------------------------------------+ \n',
+                 '|Data Type: int         | Data Type: int        | Data Type: str        | \n',
+                 '|Total Count: 12        | Total Count: 12       | Total Count: 12       | \n',
+                 '|Top Freq Value: 1      | Top Freq Value: 2     | Top Freq Value: a     | \n',
+                 '|Top Freq Count: 11     | Top Freq Count: 10    | Top Freq Count: 7     | \n',
+                 '|Mean: 1.75             | Mean: 6.81818         | Mean: -               | \n',
+                 '|STD: 2.48747           | STD: 15.23643         | STD: -                | \n',
+                 '|Has None Values: False | Has None Values: True | Has None Values: True | \n',
+                 '+-----------------------------------------------------------------------+ \n']
+            )
+        )
 
+    def test_describe2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[4, 2, 3],
+                      [1, 2, 3]]
+        )
+        self.assertEqual(
+            dt.describe(),
+            "".join(
+                ['+-------------------------------------------------------------------------+ \n',
+                 '|a                      | b                      | c                      | \n',
+                 '+-------------------------------------------------------------------------+ \n',
+                 '|Data Type: int         | Data Type: int         | Data Type: int         | \n',
+                 '|Total Count: 2         | Total Count: 2         | Total Count: 2         | \n',
+                 '|Top Freq Value: 4      | Top Freq Value: 2      | Top Freq Value: 3      | \n',
+                 '|Top Freq Count: 1      | Top Freq Count: 2      | Top Freq Count: 2      | \n',
+                 '|Mean: 2.5              | Mean: 2.0              | Mean: 3.0              | \n',
+                 '|STD: 1.5               | STD: 0.0               | STD: 0.0               | \n',
+                 '|Has None Values: False | Has None Values: False | Has None Values: False | \n',
+                 '+-------------------------------------------------------------------------+ \n']
+            )
+        )
+
+    # test_search 1-2 are used to check if a specific search of the data yields results as expected
+    def test_search1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        self.assertEqual(
+            dt.search('b', '>', 2),
+            "".join(
+                ['+---------------+ \n'
+                 '|  | a | b  | c | \n'
+                 '+---------------+ \n'
+                 '|0 | 1 | 55 | a | \n'
+                 '+---------------+ \n']
+            )
+        )
+
+    def test_search2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        self.assertEqual(
+            dt.search('c', '==', 'a'),
+            "".join(
+                ['+------------------+ \n'
+                 '|  | a  | b    | c | \n'
+                 '+------------------+ \n'
+                 '|0 | 10 | 2    | a | \n'
+                 '|1 | 1  | 2    | a | \n'
+                 '|2 | 1  | 2    | a | \n'
+                 '|3 | 1  | 55   | a | \n'
+                 '|4 | 1  | None | a | \n'
+                 '|5 | 1  | 2    | a | \n'
+                 '|6 | 1  | 2    | a | \n'
+                 '+------------------+ \n']
+            )
+        )
+
+    # test_getdata 1-2 are used to check if the copy of the data is obtained without any data misplacement
+    def test_getdata1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        self.assertEqual(
+            dt.get_data(),
+            {'column_names': ['a', 'b', 'c'],
+             'row_data': [[10, 2, 'a'],
+                          [1, 2, 'a'],
+                          [1, 2, 'a'],
+                          [1, 55, 'a'],
+                          [1, None, 'a'],
+                          [1, 2, 'a'],
+                          [1, 2, 'a'],
+                          [1, 2, '12'],
+                          [1, 2, None],
+                          [1, 2, '500'],
+                          [1, 2, 'abcd'],
+                          [1, 2, '3']]}
+        )
+
+    def test_getdata2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"]]
+        )
+
+        self.assertEqual(
+            dt.get_data(),
+            {'column_names': ['a', 'b', 'c'],
+             'row_data': [[10, 2, 'a'],
+                          [1, 2, 'a'],
+                          [1, 2, 'a'],
+                          [1, 55, 'a'],
+                          [1, None, 'a']]}
+        )
