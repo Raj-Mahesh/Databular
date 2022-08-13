@@ -276,28 +276,25 @@ class Databular:
         self.__rows = filtered_rows
         
     def get_data(self) -> Dict:
-        """
-        The function is used to give the copy of the entire data.
-        :return: a dictionary with column_names and row_data to access the entire data as a copy
-        """
+         """
+         The function is used to give the copy of the entire data.
+         
+         :return: column names, row data.
+         """
 
-        return {
+         return {
             'column_names': self.__columns,
             'row_data': self.__rows
-        }
+              }
      
     def merge(self, table) -> None:
         """
         The function imerges one databular table to another.
   
-        :param data: gets the data to be merged.
-        
-        :raises ValueError: if the parameter passed is not a databular object.
-        :raises ValueError: if the columns between the databular tables do not match.
-        :raises ValueError: if there are no records in the databular object which is passed.
+        :param table: the databular tables to be merges.
         """
         
-        if type(table).__name__ != 'Databular':
+        if type(table)._name_ != 'Databular':
             raise ValueError('The parameter passed is not a databular object.')
         data = table.get_data()
 
@@ -316,12 +313,10 @@ class Databular:
         The function coverts a column’s data to string type.
         
         :param column_name: the column name where the conversion is needed.
-        :param column_ind: index of the column that is to be converted.
-        :param prev_type: previous type of the column before conversion.
-        
-        :raises ReferenceError: if the column name is not found in the databular table.
         
         """
+      
+    
         if column_name not in self.__columns:
             raise ReferenceError('The column name is not found in the databular table.')
 
@@ -333,7 +328,7 @@ class Databular:
         else:
             self.__column_dtypes[column_ind] = str
             for i in range(len(self.__rows)):
-                self.__rows[i][column_ind] = str(self.__rows[i][column_ind])
+                self._rows[i][column_ind] = str(self._rows[i][column_ind])
 
             print(f"The column '{column_name}' has been converted from type {prev_type} to type str.")
 
@@ -342,8 +337,9 @@ class Databular:
         The function checks if the column has null values.
         
         :param column_name: the column name to check for null values.
-        :param column_ind: index of the column.
-        :param null_count: number of null values in the column.
+        
+        :return: boolean value true or false.
+        
         """
         if column_name not in self.__columns:
             raise ReferenceError('The column name is not found in the databular table.')
@@ -351,20 +347,18 @@ class Databular:
         null_count = 0
         column_ind = self.__columns.index(column_name)
         for i in range(len(self.__rows)):
-            if self.__rows[i][column_ind] is None or self.__rows[i][column_ind] == "None":
+            if self._rows[i][column_ind] is None or self._rows[i][column_ind] == "None":
                 null_count += 1
 
         print(f"The column '{column_name}' has {null_count} null values.")
         return True if null_count != 0 else False
 
-    def impute(self, column_name: str, value: Union[str, int, float]) -> None:
+    def impute(self, column_name: str, value: Union[str, int, float]):
         """ 
         The function replaces the null values with specific values.
         
-        :param has_null_values: has the null values.
+        :param column_name: column name which has the null values to be replaced.
         :param value: has the value used to check the type.
-        :param impute_val: values used for substituting the null values.
-        :param col_values: column value.
         """
         has_null_values = self.has_null(column_name)
         if not has_null_values:
@@ -398,7 +392,7 @@ class Databular:
 
             elif type(value) in {float, int}:
                 if self.__column_dtypes[column_ind] == str:
-                    raise TypeError(f'The specified column is of type str and the value is of type{type(value).__name__}')
+                    raise TypeError(f'The specified column is of type str and the value is of type{type(value)._name_}')
 
                 else:
                     for i in range(len(self.__rows)):
