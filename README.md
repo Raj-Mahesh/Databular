@@ -13,6 +13,13 @@ The entire functionality of Databular can be grouped into 4 distinct functions.
   - *Data Manipulation*: [Functions -> merge, filter, to_str_type, add_record, add_column]. These functions enable the user to manipulate the data within a Databular table which will help to aiding different analysis carried out by the user.
   - *Null Value Manipulation*: [Functions -> has_null, impute]. These function explicity deal with null values by identifying if a column has null values and also the total count and the user can choose to impute the null values with a value of their choosing.
 
+## Installing the package:
+The user can install the package using the following commands:
+```
+$ git clone https://github.com/Raj-Mahesh/Databular
+$ cd Databular
+$ python3 setup.py install
+```
 
 ## Testing the package
 There is an explicit testing suite which has been curated for this package. In order to execute that testing suite, the user can do it in two ways:
