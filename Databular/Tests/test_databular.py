@@ -864,3 +864,128 @@ class Test_Manipulation(unittest.TestCase):
                  '+--------------+ \n']
             )
             )
+        
+class Test_Null(unittest.TestCase):
+    # test_hasnull 1-2 are used to see if the function is accurately able to tell if a column has null values or not
+    def test_hasnull1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        self.assertTrue(dt.has_null('b'))
+
+    def test_hasnull2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        self.assertFalse(dt.has_null('a'))
+
+    # test_imppute 1-2 are used to see if the imputation of null values is carried out successfully
+    def test_impute1(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+
+        dt.impute('b', 'mean')
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+-------------------------+ \n',
+                 '|   | a  | b       | c    | \n',
+                 '+-------------------------+ \n',
+                 '|0  | 10 | 2.0     | a    | \n',
+                 '|1  | 1  | 2.0     | a    | \n',
+                 '|2  | 1  | 2.0     | a    | \n',
+                 '|3  | 1  | 55.0    | a    | \n',
+                 '|4  | 1  | 6.81818 | a    | \n',
+                 '|5  | 1  | 2.0     | a    | \n',
+                 '|6  | 1  | 2.0     | a    | \n',
+                 '|7  | 1  | 2.0     | 12   | \n',
+                 '|8  | 1  | 2.0     | None | \n',
+                 '|9  | 1  | 2.0     | 500  | \n',
+                 '|10 | 1  | 2.0     | abcd | \n',
+                 '|11 | 1  | 2.0     | 3    | \n',
+                 '+-------------------------+ \n']
+            )
+        )
+        self.assertFalse(dt.has_null('b'))
+
+    def test_impute2(self):
+        dt = get_databular_instance(
+            column_names=['a', 'b', 'c'],
+            row_data=[[1 * 10, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, '5' * 2, "a"],
+                      [1, "", "a"],
+                      [1, 2, "a"],
+                      [1, 2, "a"],
+                      [1, 2, '12'],
+                      [1, 2, None],
+                      [1, 2, 500],
+                      [1, 2, "abcd"],
+                      [1, 2, 3]]
+        )
+        dt.impute('c', 'imputed')
+
+        self.assertEqual(
+            dt.display(),
+            "".join(
+                ['+-------------------------+ \n',
+                 '|   | a  | b    | c       | \n',
+                 '+-------------------------+ \n',
+                 '|0  | 10 | 2    | a       | \n',
+                 '|1  | 1  | 2    | a       | \n',
+                 '|2  | 1  | 2    | a       | \n',
+                 '|3  | 1  | 55   | a       | \n',
+                 '|4  | 1  | None | a       | \n',
+                 '|5  | 1  | 2    | a       | \n',
+                 '|6  | 1  | 2    | a       | \n',
+                 '|7  | 1  | 2    | 12      | \n',
+                 '|8  | 1  | 2    | imputed | \n',
+                 '|9  | 1  | 2    | 500     | \n',
+                 '|10 | 1  | 2    | abcd    | \n',
+                 '|11 | 1  | 2    | 3       | \n',
+                 '+-------------------------+ \n']
+            )
+        )
+
+        self.assertFalse(dt.has_null('c'))       
